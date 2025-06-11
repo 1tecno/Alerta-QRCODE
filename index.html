@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Alerta - Proteja-se dos Riscos de QR Codes Maliciosos</title>
+    <title>QR Alerta - Conscientização sobre Riscos de QR Codes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -33,18 +33,33 @@
             overflow-x: hidden;
             position: relative;
             line-height: 1.6;
+            transition: background-color 1.5s ease;
         }
         
-        /* Linha de varredura (scan line) */
-        .scan-line {
+        /* SCREEN 1: TELA DE SUSTO */
+        .scare-screen {
             position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.5s ease, transform 1.5s ease;
+        }
+        
+        .scan-line {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 4px;
             background: rgba(255, 10, 84, 0.8);
             box-shadow: 0 0 15px 5px rgba(255, 10, 84, 0.8);
-            z-index: 9999;
             animation: scan 4s infinite linear;
             pointer-events: none;
         }
@@ -55,24 +70,130 @@
             100% { top: 0%; }
         }
         
-        /* Fundo com ícones temáticos animados */
-        .background-icons {
-            position: fixed;
+        .hacking-overlay {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            opacity: 0.1;
+            background: 
+                linear-gradient(rgba(255, 10, 84, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 10, 84, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.3;
             pointer-events: none;
         }
         
-        .icon {
+        .terminal {
+            background-color: rgba(0, 20, 0, 0.7);
+            border: 2px solid var(--cyber-red);
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 0 30px rgba(255, 10, 84, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .terminal-header {
             position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(199, 0, 57, 0.5);
+            padding: 10px;
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            border-bottom: 1px solid var(--cyber-red);
+        }
+        
+        .terminal-content {
+            margin-top: 50px;
+            min-height: 300px;
             font-size: 1.2rem;
+            line-height: 1.8;
+        }
+        
+        .command {
+            color: var(--cyber-red-light);
+            margin-bottom: 15px;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 3s steps(40, end);
+        }
+        
+        .blink {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .warning {
+            color: var(--cyber-yellow);
+            text-shadow: 0 0 10px var(--cyber-yellow);
+            animation: pulseWarning 2s infinite;
+        }
+        
+        .danger {
             color: var(--cyber-red);
-            opacity: 0.7;
-            animation: float 15s infinite linear;
+            text-shadow: 0 0 10px var(--cyber-red);
+            animation: pulseDanger 1s infinite;
+            font-weight: bold;
+        }
+        
+        @keyframes pulseWarning {
+            0%, 100% { opacity: 0.8; text-shadow: 0 0 5px var(--cyber-yellow); }
+            50% { opacity: 1; text-shadow: 0 0 15px var(--cyber-yellow); }
+        }
+        
+        @keyframes pulseDanger {
+            0%, 100% { opacity: 0.8; text-shadow: 0 0 5px var(--cyber-red); }
+            50% { opacity: 1; text-shadow: 0 0 15px var(--cyber-red); }
+        }
+        
+        .countdown {
+            font-size: 5rem;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            margin: 30px 0;
+            color: var(--cyber-red);
+            text-shadow: 0 0 20px rgba(255, 10, 84, 0.8);
+            animation: pulseDanger 1s infinite;
+        }
+        
+        .hacked-data {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .data-item {
+            background: rgba(255, 10, 84, 0.1);
+            border: 1px solid var(--cyber-red);
+            border-radius: 5px;
+            padding: 10px 15px;
+            min-width: 200px;
+            text-align: center;
+            animation: pulseDanger 3s infinite;
+        }
+        
+        .virus-scan {
+            position: absolute;
+            font-size: 2rem;
+            color: rgba(255, 10, 84, 0.3);
+            animation: float 10s infinite linear;
+            z-index: 0;
         }
         
         @keyframes float {
@@ -80,8 +201,19 @@
             100% { transform: translateY(-100px) rotate(360deg); }
         }
         
-        /* Header com efeito glitch */
-        .cyber-header {
+        /* SCREEN 2: CONTEÚDO EDUCATIVO */
+        .content-screen {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1.5s ease, transform 1.5s ease;
+        }
+        
+        .show-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .alert-header {
             background: linear-gradient(90deg, var(--cyber-red-dark), var(--cyber-red));
             color: white;
             padding: 1.5rem;
@@ -111,9 +243,8 @@
             padding: 0 20px;
         }
         
-        /* Hero Section com efeito de matrix */
         .hero {
-            min-height: 90vh;
+            min-height: 70vh;
             display: flex;
             align-items: center;
             position: relative;
@@ -132,7 +263,7 @@
         
         .hero-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 4.5rem;
+            font-size: 3.5rem;
             font-weight: 800;
             margin-bottom: 1.5rem;
             text-transform: uppercase;
@@ -145,7 +276,7 @@
         }
         
         .hero-subtitle {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             margin-bottom: 2.5rem;
             color: var(--text-gray);
             font-weight: 300;
@@ -190,7 +321,6 @@
             box-shadow: 0 10px 30px rgba(255, 10, 84, 0.6);
         }
         
-        /* Seções com efeito de vidro */
         section {
             padding: 6rem 2rem;
             position: relative;
@@ -293,7 +423,6 @@
             line-height: 1.7;
         }
         
-        /* Seção de Estatísticas */
         .stats-section {
             background: radial-gradient(circle at center, rgba(255, 10, 84, 0.1) 0%, transparent 70%);
         }
@@ -345,7 +474,6 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         }
         
-        /* Simulador com efeito hacker */
         .simulator-section {
             background: radial-gradient(circle at center, rgba(255, 10, 84, 0.1) 0%, transparent 70%);
         }
@@ -435,7 +563,6 @@
             100% { box-shadow: 0 0 10px rgba(255, 10, 84, 0.3); }
         }
         
-        /* Footer com efeito de circuitos */
         footer {
             background: linear-gradient(90deg, var(--cyber-red-dark), var(--dark-bg));
             padding: 5rem 2rem 2rem;
@@ -516,10 +643,9 @@
             color: var(--text-gray);
             position: relative;
             z-index: 1;
-            font-size: 0.9rem;
         }
         
-        .credits {
+        .credit {
             font-style: italic;
             margin-top: 10px;
             color: rgba(255, 255, 255, 0.6);
@@ -528,15 +654,15 @@
         /* Responsividade */
         @media (max-width: 768px) {
             .hero-title {
-                font-size: 3rem;
+                font-size: 2.5rem;
             }
             
             .hero-subtitle {
-                font-size: 1.4rem;
+                font-size: 1.2rem;
             }
             
             .section-title {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
             
             .qr-placeholder {
@@ -544,231 +670,296 @@
                 height: 180px;
             }
         }
+        
+        /* Animação de tremor */
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
     </style>
 </head>
 <body>
-    <!-- Linha de varredura -->
-    <div class="scan-line"></div>
-    
-    <!-- Fundo com ícones temáticos -->
-    <div class="background-icons" id="backgroundIcons"></div>
-    
-    <!-- Header -->
-    <div class="cyber-header">
-        <div class="container">
-            <i class="fas fa-exclamation-triangle"></i> ALERTA: QR CODES MALICIOSOS PODEM ROUBAR SEUS DADOS!
+    <!-- SCREEN 1: TELA DE SUSTO -->
+    <div class="scare-screen" id="scareScreen">
+        <div class="scan-line"></div>
+        <div class="hacking-overlay"></div>
+        
+        <!-- Vírus flutuantes -->
+        <div class="virus-scan" style="top:10%; left:5%;"><i class="fas fa-virus"></i></div>
+        <div class="virus-scan" style="top:20%; left:80%;"><i class="fas fa-biohazard"></i></div>
+        <div class="virus-scan" style="top:70%; left:15%;"><i class="fas fa-radiation"></i></div>
+        <div class="virus-scan" style="top:40%; left:90%;"><i class="fas fa-bug"></i></div>
+        
+        <div class="terminal">
+            <div class="terminal-header">
+                <i class="fas fa-terminal"></i> SISTEMA DE SEGURANÇA - ACESSO NÃO AUTORIZADO DETECTADO
+            </div>
+            
+            <div class="terminal-content">
+                <div class="command">> Iniciando sequência de acesso... <span class="blink">█</span></div>
+                <div class="command">> Bypassando firewalls... SUCESSO<span class="blink">█</span></div>
+                <div class="command">> Explorando vulnerabilidades... VULNERABILIDADE ENCONTRADA<span class="blink">█</span></div>
+                <div class="command warning">> AVISO: Dispositivo comprometido via QR code<span class="blink">█</span></div>
+                <div class="command danger">> ALERTA: DADOS SENDO EXTRAÍDOS AGORA!<span class="blink">█</span></div>
+                
+                <div class="countdown" id="countdown">5</div>
+                
+                <div class="hacked-data">
+                    <div class="data-item">
+                        <i class="fas fa-user"></i> Dados Pessoais
+                    </div>
+                    <div class="data-item">
+                        <i class="fas fa-address-book"></i> Lista de Contatos
+                    </div>
+                    <div class="data-item">
+                        <i class="fas fa-camera"></i> Fotos e Vídeos
+                    </div>
+                    <div class="data-item">
+                        <i class="fas fa-money-bill-wave"></i> Dados Bancários
+                    </div>
+                </div>
+                
+                <div class="command danger">> ACESSO COMPLETO OBTIDO - DISPOSITIVO SOB CONTROLE REMOTO<span class="blink">█</span></div>
+            </div>
         </div>
     </div>
     
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">QR ALERTA</h1>
-            <p class="hero-subtitle">Descubra os perigos ocultos por trás dos QR codes e aprenda a se proteger antes que seja tarde demais</p>
-            <a href="#riscos" class="btn">Ver Riscos Ocultos</a>
+    <!-- SCREEN 2: CONTEÚDO EDUCATIVO -->
+    <div class="content-screen" id="contentScreen">
+        <div class="alert-header">
+            <i class="fas fa-exclamation-triangle"></i> ALERTA: QR CODES MALICIOSOS PODEM ROUBAR SEUS DADOS!
         </div>
-    </section>
-    
-    <!-- Riscos Section -->
-    <section id="riscos">
-        <div class="container">
-            <h2 class="section-title">Riscos Invisíveis</h2>
-            <div class="cards-container">
-                <div class="cyber-card">
-                    <div class="card-icon">
-                        <i class="fas fa-fish"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">Phishing Digital</h3>
-                        <p class="card-text">QR codes falsos podem levar a sites clones de bancos e redes sociais para roubar seus dados pessoais e credenciais de acesso.</p>
-                    </div>
-                </div>
-                
-                <div class="cyber-card">
-                    <div class="card-icon">
-                        <i class="fas fa-virus"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">Invasão Maliciosa</h3>
-                        <p class="card-text">Um simples scan pode instalar malware em seu dispositivo, dando controle total a hackers sobre suas informações.</p>
-                    </div>
-                </div>
-                
-                <div class="cyber-card">
-                    <div class="card-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">Golpes Financeiros</h3>
-                        <p class="card-text">QR codes prometendo promoções podem esconder transferências indesejadas via PIX ou cobranças automáticas.</p>
-                    </div>
-                </div>
-                
-                <div class="cyber-card">
-                    <div class="card-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">Rastreamento Ilegal</h3>
-                        <p class="card-text">Alguns QR codes podem revelar sua localização em tempo real para criminosos sem seu conhecimento.</p>
-                    </div>
-                </div>
-                
-                <div class="cyber-card">
-                    <div class="card-icon">
-                        <i class="fas fa-user-secret"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">Vazamento de Dados</h3>
-                        <p class="card-text">Seus contatos, fotos e mensagens podem ser acessados por invasores através de QR codes comprometidos.</p>
-                    </div>
-                </div>
-                
-                <div class="cyber-card">
-                    <div class="card-icon">
-                        <i class="fas fa-ban"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">Bloqueio de Dispositivo</h3>
-                        <p class="card-text">Em casos extremos, seu celular pode ser bloqueado e ter os dados sequestrados para resgate.</p>
-                    </div>
-                </div>
+        
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">QR ALERTA</h1>
+                <p class="hero-subtitle">A simulação que você viu poderia ser real! Aprenda a se proteger dos riscos ocultos nos QR codes</p>
+                <a href="#riscos" class="btn">Conheça os Riscos</a>
             </div>
-        </div>
-    </section>
-    
-    <!-- Estatísticas Section -->
-    <section class="stats-section">
-        <div class="container">
-            <h2 class="section-title">O Alerta em Números</h2>
-            
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-number">240%</div>
-                    <div class="stat-text">Aumento de golpes via QR no Brasil</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-number">63%</div>
-                    <div class="stat-text">Das pessoas escaneiam sem verificar</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-number">R$ 85Mi</div>
-                    <div class="stat-text">Prejuízos em 2023</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-number">92%</div>
-                    <div class="stat-text">Dos ataques começam com QR</div>
-                </div>
-            </div>
-            
-            <div class="chart-container">
-                <canvas id="qrStatsChart"></canvas>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Simulador Section -->
-    <section class="simulator-section">
-        <div class="container">
-            <h2 class="section-title">Simulador de Risco</h2>
-            
-            <div class="simulator-container">
-                <div class="simulator-header">
-                    <i class="fas fa-radiation"></i> QR CODE MALICIOSO - NÃO ESCANEIE!
-                </div>
-                <div class="simulator-body">
-                    <div class="qr-placeholder" id="maliciousQr">
-                        <i class="fas fa-qrcode"></i>
+        </section>
+        
+        <!-- Riscos Section -->
+        <section id="riscos">
+            <div class="container">
+                <h2 class="section-title">Riscos Invisíveis</h2>
+                <div class="cards-container">
+                    <div class="cyber-card">
+                        <div class="card-icon">
+                            <i class="fas fa-fish"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Phishing Digital</h3>
+                            <p class="card-text">QR codes falsos podem levar a sites clones de bancos e redes sociais para roubar seus dados pessoais e credenciais de acesso.</p>
+                        </div>
                     </div>
-                    <p>Clique no QR code acima para ver o que acontece quando você escaneia um código perigoso</p>
                     
-                    <div class="simulator-result danger-result" id="dangerResult">
-                        <h3><i class="fas fa-radiation"></i> INFECÇÃO DETECTADA!</h3>
-                        <p>Se este fosse um QR code real, seu dispositivo poderia ter sido comprometido neste momento!</p>
-                        <p>Dados roubados: Contatos • Localização • Fotos • Dados bancários</p>
+                    <div class="cyber-card">
+                        <div class="card-icon">
+                            <i class="fas fa-virus"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Invasão Maliciosa</h3>
+                            <p class="card-text">Um simples scan pode instalar malware em seu dispositivo, dando controle total a hackers sobre suas informações.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="cyber-card">
+                        <div class="card-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Golpes Financeiros</h3>
+                            <p class="card-text">QR codes prometendo promoções podem esconder transferências indesejadas via PIX ou cobranças automáticas.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="cyber-card">
+                        <div class="card-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Rastreamento Ilegal</h3>
+                            <p class="card-text">Alguns QR codes podem revelar sua localização em tempo real para criminosos sem seu conhecimento.</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+        
+        <!-- Estatísticas Section -->
+        <section class="stats-section">
+            <div class="container">
+                <h2 class="section-title">O Alerta em Números</h2>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-number">240%</div>
+                        <div class="stat-text">Aumento de golpes via QR no Brasil</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number">63%</div>
+                        <div class="stat-text">Das pessoas escaneiam sem verificar</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number">R$ 85Mi</div>
+                        <div class="stat-text">Prejuízos em 2023</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number">92%</div>
+                        <div class="stat-text">Dos ataques começam com QR</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="qrStatsChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Simulador Section -->
+        <section class="simulator-section">
+            <div class="container">
+                <h2 class="section-title">Simulador de Risco</h2>
+                
+                <div class="simulator-container">
+                    <div class="simulator-header">
+                        <i class="fas fa-radiation"></i> QR CODE MALICIOSO - NÃO ESCANEIE!
+                    </div>
+                    <div class="simulator-body">
+                        <div class="qr-placeholder" id="maliciousQr">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <p>Clique no QR code acima para ver o que acontece quando você escaneia um código perigoso</p>
+                        
+                        <div class="simulator-result danger-result" id="dangerResult">
+                            <h3><i class="fas fa-radiation"></i> INFECÇÃO DETECTADA!</h3>
+                            <p>Se este fosse um QR code real, seu dispositivo poderia ter sido comprometido neste momento!</p>
+                            <p>Dados roubados: Contatos • Localização • Fotos • Dados bancários</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer>
+            <div class="circuit-pattern"></div>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-column">
+                        <h3>QR Alerta</h3>
+                        <p>Nossa missão é proteger brasileiros dos riscos digitais ocultos em QR codes através de informação e tecnologia.</p>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h3>Links Rápidos</h3>
+                        <ul class="footer-links">
+                            <li><a href="#riscos"><i class="fas fa-arrow-right"></i> Riscos Ocultos</a></li>
+                            <li><a href="#"><i class="fas fa-arrow-right"></i> Dicas de Proteção</a></li>
+                            <li><a href="#"><i class="fas fa-arrow-right"></i> Verificador de QR</a></li>
+                            <li><a href="#"><i class="fas fa-arrow-right"></i> Denuncie Golpes</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h3>Recursos</h3>
+                        <ul class="footer-links">
+                            <li><a href="#"><i class="fas fa-arrow-right"></i> Guia Completo</a></li>
+                            <li><a href="#"><i class="fas fa-arrow-right"></i> Aplicativos Seguros</a></li>
+                            <li><a href="#"><i class="fas fa-arrow-right"></i> Histórias Reais</a></li>
+                            <li><a href="#"><i class="fas fa-arrow-right"></i> Fórum de Discussão</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="copyright">
+                    <p>&copy; 2023 QR Alerta. Todos os direitos reservados. | Protegendo brasileiros desde o primeiro scan</p>
+                    <p class="credit">Projeto educacional desenvolvido por Yago, estudante do 2º ano do Ensino Médio Técnico em Informática, sob orientação do Prof. Cleiton.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
     
-    <!-- Footer -->
-    <footer>
-        <div class="circuit-pattern"></div>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>QR Alerta</h3>
-                    <p>Nossa missão é proteger brasileiros dos riscos digitais ocultos em QR codes através de informação e tecnologia.</p>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Links Rápidos</h3>
-                    <ul class="footer-links">
-                        <li><a href="#riscos"><i class="fas fa-arrow-right"></i> Riscos Ocultos</a></li>
-                        <li><a href="#"><i class="fas fa-arrow-right"></i> Dicas de Proteção</a></li>
-                        <li><a href="#"><i class="fas fa-arrow-right"></i> Verificador de QR</a></li>
-                        <li><a href="#"><i class="fas fa-arrow-right"></i> Denuncie Golpes</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Recursos</h3>
-                    <ul class="footer-links">
-                        <li><a href="#"><i class="fas fa-arrow-right"></i> Guia Completo</a></li>
-                        <li><a href="#"><i class="fas fa-arrow-right"></i> Aplicativos Seguros</a></li>
-                        <li><a href="#"><i class="fas fa-arrow-right"></i> Histórias Reais</a></li>
-                        <li><a href="#"><i class="fas fa-arrow-right"></i> Fórum de Discussão</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="copyright">
-                <p>&copy; 2023 QR Alerta. Todos os direitos reservados. | Protegendo brasileiros desde o primeiro scan</p>
-                <p class="credits">Projeto educacional desenvolvido por Yago, estudante do 2º ano do Ensino Médio Técnico em Informática, sob orientação do Prof. Cleiton.</p>
-            </div>
-        </div>
-    </footer>
+    <audio id="hackSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-alarm-905.mp3" type="audio/mpeg">
+    </audio>
     
     <script>
-        // Criar ícones de fundo animados
         document.addEventListener('DOMContentLoaded', function() {
-            const background = document.getElementById('backgroundIcons');
-            const icons = ['fa-qrcode', 'fa-lock', 'fa-shield-alt', 'fa-user-secret', 'fa-virus', 'fa-bug', 'fa-code', 'fa-terminal', 'fa-mask', 'fa-eye', 'fa-ban', 'fa-exclamation-triangle'];
-            
-            for (let i = 0; i < 80; i++) {
-                const icon = document.createElement('div');
-                icon.className = 'icon';
-                icon.innerHTML = `<i class="fas ${icons[Math.floor(Math.random() * icons.length)]}"></i>`;
-                
-                // Posição aleatória
-                icon.style.left = `${Math.random() * 100}%`;
-                
-                // Tamanho aleatório
-                const size = 1 + Math.random() * 2;
-                icon.style.fontSize = `${size}rem`;
-                
-                // Atraso de animação
-                icon.style.animationDelay = `${Math.random() * 15}s`;
-                icon.style.animationDuration = `${10 + Math.random() * 20}s`;
-                
-                background.appendChild(icon);
+            // Criar vírus flutuantes
+            for (let i = 0; i < 10; i++) {
+                const virus = document.createElement('div');
+                virus.className = 'virus-scan';
+                virus.innerHTML = '<i class="fas fa-virus"></i>';
+                virus.style.left = `${Math.random() * 100}%`;
+                virus.style.top = `${Math.random() * 100}%`;
+                virus.style.animationDelay = `${Math.random() * 5}s`;
+                virus.style.animationDuration = `${10 + Math.random() * 20}s`;
+                virus.style.fontSize = `${1 + Math.random() * 2}rem`;
+                document.getElementById('scareScreen').appendChild(virus);
             }
             
-            // Simulador de QR perigoso
-            document.getElementById('maliciousQr').addEventListener('click', function() {
+            // Contagem regressiva dramática
+            let count = 5;
+            const countdownEl = document.getElementById('countdown');
+            const countdownInterval = setInterval(() => {
+                countdownEl.textContent = count;
+                count--;
+                
+                if (count < 0) {
+                    clearInterval(countdownInterval);
+                    countdownEl.textContent = "0";
+                    
+                    // Efeito de tremor
+                    document.body.classList.add('shake');
+                    
+                    // Transição para conteúdo educativo
+                    setTimeout(() => {
+                        const scareScreen = document.getElementById('scareScreen');
+                        scareScreen.style.opacity = '0';
+                        scareScreen.style.transform = 'scale(1.2)';
+                        
+                        setTimeout(() => {
+                            scareScreen.style.display = 'none';
+                            document.getElementById('contentScreen').classList.add('show-content');
+                        }, 1500);
+                    }, 1000);
+                }
+            }, 1000);
+            
+            // Efeito sonoro
+            setTimeout(() => {
+                const audio = document.getElementById('hackSound');
+                audio.volume = 0.5;
+                audio.play().catch(e => console.log("Autoplay bloqueado: ", e));
+            }, 3000);
+            
+            // Simulador de QR perigoso na página educativa
+            document.getElementById('maliciousQr')?.addEventListener('click', function() {
                 const dangerResult = document.getElementById('dangerResult');
                 dangerResult.style.display = 'block';
                 
-                // Efeito de infecção
                 this.innerHTML = '<i class="fas fa-biohazard"></i>';
                 this.style.background = 'linear-gradient(45deg, var(--cyber-red), #8c0a0a)';
                 this.style.boxShadow = '0 0 40px rgba(255, 10, 84, 0.8)';
                 
-                // Reset após 6 segundos
                 setTimeout(() => {
                     dangerResult.style.display = 'none';
                     this.innerHTML = '<i class="fas fa-qrcode"></i>';
@@ -778,55 +969,57 @@
             });
             
             // Gráfico de estatísticas
-            const ctx = document.getElementById('qrStatsChart').getContext('2d');
-            const qrStatsChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Phishing', 'Malware', 'Golpes Financeiros', 'Rastreamento', 'Spam'],
-                    datasets: [{
-                        label: 'Casos Reportados',
-                        data: [42, 28, 65, 19, 36],
-                        backgroundColor: [
-                            'rgba(255, 10, 84, 0.7)',
-                            'rgba(199, 0, 57, 0.7)',
-                            'rgba(255, 209, 102, 0.7)',
-                            'rgba(114, 9, 183, 0.7)',
-                            'rgba(67, 97, 238, 0.7)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 10, 84, 1)',
-                            'rgba(199, 0, 57, 1)',
-                            'rgba(255, 209, 102, 1)',
-                            'rgba(114, 9, 183, 1)',
-                            'rgba(67, 97, 238, 1)'
-                        ],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                color: '#A0AEC0',
-                                font: {
-                                    size: 14
+            const ctx = document.getElementById('qrStatsChart')?.getContext('2d');
+            if (ctx) {
+                const qrStatsChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Phishing', 'Malware', 'Golpes Financeiros', 'Rastreamento', 'Spam'],
+                        datasets: [{
+                            label: 'Casos Reportados',
+                            data: [42, 28, 65, 19, 36],
+                            backgroundColor: [
+                                'rgba(255, 10, 84, 0.7)',
+                                'rgba(199, 0, 57, 0.7)',
+                                'rgba(255, 209, 102, 0.7)',
+                                'rgba(114, 9, 183, 0.7)',
+                                'rgba(67, 97, 238, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 10, 84, 1)',
+                                'rgba(199, 0, 57, 1)',
+                                'rgba(255, 209, 102, 1)',
+                                'rgba(114, 9, 183, 1)',
+                                'rgba(67, 97, 238, 1)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    color: '#A0AEC0',
+                                    font: {
+                                        size: 14
+                                    }
                                 }
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Distribuição de Golpes por QR Code no Brasil',
-                            color: '#FFFFFF',
-                            font: {
-                                size: 18,
-                                family: "'Poppins', sans-serif"
+                            },
+                            title: {
+                                display: true,
+                                text: 'Distribuição de Golpes por QR Code no Brasil',
+                                color: '#FFFFFF',
+                                font: {
+                                    size: 18,
+                                    family: "'Poppins', sans-serif"
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
+            }
         });
     </script>
 </body>
